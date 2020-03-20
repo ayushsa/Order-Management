@@ -18,18 +18,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hcl.order.entity.Order;
 import com.hcl.order.entity.OrderItem;
+import com.hcl.order.exception.ProductNotFoundException;
 import com.hcl.order.responseEntity.Response;
 import com.hcl.order.service.OrderManagerImpl;
-import com.hcl.order.utilities.RandomIdentifierGenerator;
 import com.hcl.order.utilities.Utills;
 
 @RestController
 public class OrderController {
 
-	@Autowired
+	@Autowired 
 	OrderManagerImpl orderservice;
-	@Autowired
-	RandomIdentifierGenerator orderNoGenrator;
+ 
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -98,36 +97,22 @@ public class OrderController {
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
 
 	}
+	
+	
+	@GetMapping("/order/{orderId}/{productId}")
+	public ResponseEntity<Response> getItemDetailOfOrder(@PathVariable("orderId") String orderId,@PathVariable("productId") String productId) throws ProductNotFoundException {
+		Response response = new Response();
 
-//	@GetMapping("/test")
-//	public String testCart() throws Exception {
-//		Order order = new Order("ORD1", "u_ajeet", "Preparing", "2345", "CC", "INR");
-//		List<OrderItem> listOfOrderItems = new ArrayList<OrderItem>();
-//		listOfOrderItems.add(new OrderItem("123", "Product name1", "Product Description1", order));
-//		listOfOrderItems.add(new OrderItem("124", "Product name2", "Product Description2", order));
-//		order.setOrderItems(listOfOrderItems);
-//
-//		orderservice.createOrder(order, listOfOrderItems);
-//
-//		return "cart controller";
-//
-//	}
-//
-//	@GetMapping("/update")
-//	public String updateOrder() {
-//		orderservice.cancleOrder("1");
-//		return "cancle cart controller";
-//	}
-//
-//	@GetMapping("/allorder")
-//	public List<OrderItem> getAllItemsOrder() {
-//		return orderservice.getAllIOrderItems("1").get();
-//
-//	}
-//
-//	@GetMapping("/orderhistory")
-//	public List<Order> getOrderHistory() {
-//		return orderservice.getOrderHistoryOfUser("u_ajeet").get();
-//
-//	}
+		Optional<OrderItem> orderItem = orderservice.getDetailOfOrderItem(orderId,productId);
+		response.setStatus("200");
+		response.setMessage("success");
+		List<OrderItem> data = new ArrayList<OrderItem>();
+		data.add(orderItem.get());
+		response.setData(data);
+
+		return new ResponseEntity<Response>(response, HttpStatus.OK);
+
+	}
+	
+
 }

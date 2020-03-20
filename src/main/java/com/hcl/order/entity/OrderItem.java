@@ -17,7 +17,10 @@ import com.hcl.order.utilities.AuditModel;
 @Entity
 @Table(name = "orderItem")
 @Transactional
-public class OrderItem {
+public class OrderItem extends AuditModel{
+
+	
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -75,9 +78,9 @@ public class OrderItem {
 	}
 
 
-	public Order getOrders() {
-		return orders;
-	}
+//	public Order getOrders() {
+//		return orders;
+//	}
 
 
 	public void setOrders(Order orders) {

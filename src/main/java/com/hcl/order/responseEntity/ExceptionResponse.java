@@ -43,20 +43,16 @@ public class ExceptionResponse {
 		this.status = status;
 	}
 
-	public void setMassage(String massage) {
-		this.massage = massage;
-	}
-
-	public void setDetail(String detail) {
-		this.detail = detail;
-	}
-
-	public void setTimestamp(Date timestamp) {
-		this.timestamp = timestamp;
-	}
+//	public void setMassage(String massage) {
+//		this.massage = massage;
+//	}
+//
+//	public void setDetail(String detail) {
+//		this.detail = detail;
+//	}
+//
+//	public void setTimestamp(Date timestamp) {
+//		this.timestamp = timestamp;
+//	}
 	
-	
-	
-	
-
 }

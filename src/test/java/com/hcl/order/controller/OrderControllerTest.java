@@ -16,10 +16,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -31,8 +28,6 @@ import com.hcl.order.entity.OrderItem;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
-@ContextConfiguration(classes = {TestContext.class, WebApplicationContext.class})
-@WebAppConfiguration
 class OrderControllerTest {
 	private MockMvc mockmvc;
 
@@ -44,7 +39,7 @@ class OrderControllerTest {
 	private void setUp() {
 		mockmvc = MockMvcBuilders.webAppContextSetup(context).build();
 	}
-
+ 
 	@Test
 	void testCreateOrder() throws Exception {
 		Order order = new Order("ORD1", "u_ajeet", "Preparing", "2345", "CC", "INR","Shipping Adderess");
@@ -61,6 +56,24 @@ class OrderControllerTest {
 				.andExpect(jsonPath("$.message").value("success")).andDo(print());
 		
 	}
+	
+	
+	
+	@Test
+	void testCreateOrder_With_invalid_data() throws Exception {
+		Order order = new Order();
+		List<OrderItem> listOfOrderItems = new ArrayList<OrderItem>();
+		listOfOrderItems.add(new OrderItem());
+		listOfOrderItems.add(new OrderItem());
+		order.setOrderItems(listOfOrderItems);
+
+		String jsonRequest = objectmapper.writeValueAsString(order);
+		
+		mockmvc.perform(post("/order/u_ajeet").contentType(MediaType.APPLICATION_JSON).content(jsonRequest)
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isInternalServerError())
+		        .andDo(print());
+		
+	}
 
 	@Test
 	void testUpdateOrder() throws Exception {
@@ -75,10 +88,38 @@ class OrderControllerTest {
 	}
 
 	@Test
+	void test_Update_Order_when_orderId_invalid() throws Exception {
+		mockmvc.perform(put("/order/4537447/delivered")
+				.accept(MediaType.APPLICATION_JSON_VALUE))
+		       
+		        .andExpect(status().isNotFound())
+				.andDo(print());
+	}
+	
+	
+	@Test
 	void testGetAllItemsOfOrder() throws Exception {
 		mockmvc.perform(get("/order/{orderId}", "1")
 				.accept(MediaType.APPLICATION_JSON_VALUE))
 		        .andExpect(status().isOk())
+				.andDo(print());
+		
+	}
+	
+	@Test
+	void testGetAllItemsOfOrder_when_orderId_invalid() throws Exception {
+		mockmvc.perform(get("/order/{orderId}", "325445")
+				.accept(MediaType.APPLICATION_JSON_VALUE))
+		        .andExpect(status().isNotFound())
+				.andDo(print());
+		
+	}
+	
+	@Test
+	void testGetAllItemsOfOrder_when_orderId_is_String() throws Exception {
+		mockmvc.perform(get("/order/{orderId}", "sessererewrew")
+				.accept(MediaType.APPLICATION_JSON_VALUE))
+		        .andExpect(status().isInternalServerError())
 				.andDo(print());
 		
 	}
@@ -93,5 +134,49 @@ class OrderControllerTest {
 				.andDo(print());
 		
 	}
+	
+	@Test
+	void testGetOrderHistoryOfUser_when_userId_invalid() throws Exception {
+		mockmvc.perform(get("/order/user/fdgdfggfg")
+				.accept(MediaType.APPLICATION_JSON_VALUE))
+		        .andExpect(jsonPath("$.status").exists())
+		        .andExpect(jsonPath("$.status").value("404"))
+		        .andExpect(status().isNotFound())
+				.andDo(print());
+		
+	}
+	
+	
+	@Test
+	void testgetItemDetailOfOrder() throws Exception {
+		mockmvc.perform(get("/order/1/124")
+				.accept(MediaType.APPLICATION_JSON_VALUE))
+		        .andExpect(jsonPath("$.status").exists())
+		        .andExpect(jsonPath("$.status").value("200"))
+		        .andExpect(status().isOk())
+				.andDo(print());
+		
+	}
 
+	
+	
+	@Test
+	void testgetItemDetailOfOrder_when_orderId_invalid() throws Exception {
+		mockmvc.perform(get("/order/77373/124")
+				.accept(MediaType.APPLICATION_JSON_VALUE))
+		        .andExpect(jsonPath("$.status").exists())
+		        .andExpect(jsonPath("$.status").value("404"))
+				.andDo(print());
+		
+	}
+	
+	@Test
+	void testgetItemDetailOfOrder_when_productId_invalid() throws Exception {
+		mockmvc.perform(get("/order/1/65465654")
+				.accept(MediaType.APPLICATION_JSON_VALUE))
+		        .andExpect(jsonPath("$.status").exists())
+		        .andExpect(jsonPath("$.status").value("404"))
+				.andDo(print());
+		
+	}
 }

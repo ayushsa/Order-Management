@@ -13,22 +13,22 @@ public class Response {
 	private List<?> data;
 	private Set<?> setdata;
 
-	public Response(String status, String message, List<?> data) {
-		this.status = status;
-		this.message = message;
-		this.data = data;
-	}
+//	public Response(String status, String message, List<?> data) {
+//		this.status = status;
+//		this.message = message;
+//		this.data = data;
+//	}
 
 	public Response() {
 		super();
 	}
 
-	public Response(String status, String message, Set<?> setdata) {
-
-		this.status = status;
-		this.message = message;
-		this.setdata = setdata;
-	}
+//	public Response(String status, String message, Set<?> setdata) {
+//
+//		this.status = status;
+//		this.message = message;
+//		this.setdata = setdata;
+//	}
 
 	public String getStatus() {
 		return status;
@@ -58,8 +58,8 @@ public class Response {
 		return setdata;
 	}
 
-	public void setSetdata(Set<?> setdata) {
-		this.setdata = setdata;
-	}
+//	public void setSetdata(Set<?> setdata) {
+//		this.setdata = setdata;
+//	}
 
 }

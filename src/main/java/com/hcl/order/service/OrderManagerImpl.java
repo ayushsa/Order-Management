@@ -10,21 +10,18 @@ import com.hcl.order.dao.OrderDAOImpl;
 import com.hcl.order.entity.Order;
 import com.hcl.order.entity.OrderItem;
 import com.hcl.order.exception.OrderNotFoundException;
+import com.hcl.order.exception.ProductNotFoundException;
 
 @Service
 public class OrderManagerImpl implements OrderManager {
 
 	@Autowired
-	OrderDAOImpl orderRepository;
+	OrderDAOImpl orderRepository; 
 
 	@Override
 	public Optional<Order> createOrder(Order order, List<OrderItem> orderItems) throws Exception {
 		Optional<Order> savedorder = orderRepository.saveOrder(order, orderItems);
-		if (savedorder.isPresent()) {
-			return orderRepository.saveOrder(order, orderItems);
-		}else {
-			throw new Exception(); 
-		}
+		return savedorder;
 		
 	}
 
@@ -52,10 +49,10 @@ public class OrderManagerImpl implements OrderManager {
 		}
 		
 		
-	}
+	}  
 
 	@Override
-	public Optional<OrderItem> getDetailOfOrderItem(String orderId, String productId) {
+	public Optional<OrderItem> getDetailOfOrderItem(String orderId, String productId) throws ProductNotFoundException {
 		Optional<Order> order = orderRepository.getOrderById(orderId);
 		if (order.isPresent()) {
 			OrderItem foundOrderItem = null;
@@ -64,7 +61,13 @@ public class OrderManagerImpl implements OrderManager {
 					foundOrderItem = orderItem;
 				}
 			}
-			return Optional.of(foundOrderItem);
+			if(foundOrderItem!=null) {
+				return Optional.of(foundOrderItem);
+			}else {
+				throw new ProductNotFoundException("product not found"); 
+			}
+			
+			
 		}else {
 			throw new OrderNotFoundException("order not found"); 
 		}

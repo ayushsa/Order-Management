@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.hcl.order.entity.Order;
 import com.hcl.order.entity.OrderItem;
+import com.hcl.order.exception.ProductNotFoundException;
 
 public interface OrderManager {
 	
@@ -14,7 +15,7 @@ public interface OrderManager {
 	
 	public Optional<List<OrderItem>> getAllIOrderItems(String orderId);
 
-	public Optional<OrderItem> getDetailOfOrderItem(String orderId, String productId);
+	public Optional<OrderItem> getDetailOfOrderItem(String orderId, String productId) throws ProductNotFoundException;
 	
 	public Optional<List<Order>> getOrderHistoryOfUser(String userId);
 }
