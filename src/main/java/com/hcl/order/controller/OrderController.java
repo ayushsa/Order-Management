@@ -27,7 +27,14 @@ import com.hcl.order.utilities.Utills;
 public class OrderController {
 
 	@Autowired 
-	OrderManagerImpl orderservice;
+	OrderManagerImpl orderservice; /*Programe against Interface not Implementation
+	
+	Example 
+	
+	@Autowired 
+	OrderManager orderservice;
+	
+	*/
  
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -37,9 +44,12 @@ public class OrderController {
 			@PathVariable("userId") String userId) throws Exception {
 		Response response = new Response();
 
+        /*No HardCoded Status, Read from Properties Files*/
 		Order formattedOrder = new Order(Utills.unique(), userId, "Preparing", order.getOrderTotal(),
 				order.getPaymentMode(), order.getPaymentCurrency(), order.getShippingAdderess());
 		List<OrderItem> orderItems = order.getOrderItems();
+		
+		/*Dangling Code, Persist in Database*/
 		for (OrderItem orderItem : orderItems) {
 			orderItem.setOrders(formattedOrder);
 
@@ -47,6 +57,8 @@ public class OrderController {
 
 		Optional<Order> orderResponse = orderservice.createOrder(formattedOrder, orderItems);
 		logger.debug(orderResponse.toString());
+		
+		/*Read from HttpStatus e.g. HttpStatus.BAD_REQUEST*/
 		response.setStatus("201");
 		response.setMessage("success");
 		List<Order> data = new ArrayList<Order>();
@@ -61,8 +73,11 @@ public class OrderController {
 	public ResponseEntity<Response> updateOrder(@PathVariable("orderId") String orderId,
 			@PathVariable("orderStatus") String orderStatus) {
 		Response response = new Response();
+		
+		/*Service function can be renamed to updateOrderStatus*/
 		Optional<Order> order = orderservice.changeOrderStatus(orderId, orderStatus);
 
+        /*Same Comment as Above*/
 		response.setStatus("200");
 		response.setMessage("success");
 		List<Order> data = new ArrayList<Order>();
@@ -73,6 +88,7 @@ public class OrderController {
 	}
 
 	@GetMapping("/order/{orderId}")
+	/*Controller function can be renamed to getAllIOrderItems*/
 	public ResponseEntity<Response> getAllItemsOfOrder(@PathVariable("orderId") String orderId) {
 		Response response = new Response();
 
