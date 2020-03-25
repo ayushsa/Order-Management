@@ -27,16 +27,8 @@ import com.hcl.order.utilities.Utills;
 public class OrderController {
 
 	@Autowired 
-	OrderManagerImpl orderservice; /*Programe against Interface not Implementation
-	
-	Example 
-	
-	@Autowired 
 	OrderManager orderservice;
-	
-	*/
  
-
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@PostMapping("/order/{userId}")
@@ -59,7 +51,7 @@ public class OrderController {
 		logger.debug(orderResponse.toString());
 		
 		/*Read from HttpStatus e.g. HttpStatus.BAD_REQUEST*/
-		response.setStatus("201");
+		response.setStatus(HttpStatus.CREATED);
 		response.setMessage("success");
 		List<Order> data = new ArrayList<Order>();
 		data.add(orderResponse.get());
@@ -78,7 +70,7 @@ public class OrderController {
 		Optional<Order> order = orderservice.changeOrderStatus(orderId, orderStatus);
 
         /*Same Comment as Above*/
-		response.setStatus("200");
+		response.setStatus(HttpStatus.CREATED);
 		response.setMessage("success");
 		List<Order> data = new ArrayList<Order>();
 		data.add(order.get());
@@ -89,7 +81,7 @@ public class OrderController {
 
 	@GetMapping("/order/{orderId}")
 	/*Controller function can be renamed to getAllIOrderItems*/
-	public ResponseEntity<Response> getAllItemsOfOrder(@PathVariable("orderId") String orderId) {
+	public ResponseEntity<Response> getAllIOrderItems(@PathVariable("orderId") String orderId) {
 		Response response = new Response();
 
 		Optional<List<OrderItem>> orderItemsList = orderservice.getAllIOrderItems(orderId);
