@@ -73,14 +73,14 @@ class OrderManagerImplTest {
 	void test_cancle_order() {
 		Order order = new Order("ORD1", "u_ajeet", "Preparing", "2345", "CC", "INR", "Shipping Adderess");
 		when(orderRepository.getOrderById("1")).thenReturn(Optional.of(order));
-		Optional<Order> updatedorder = mockedOrderService.changeOrderStatus("1", "delivered");
+		Optional<Order> updatedorder = mockedOrderService.updateOrderStatus("1", "delivered");
 		assertEquals("delivered", updatedorder.get().getOrderStatus());
 	}
 
 	@Test
 	void test_cancle_order_when_orderId_invalid() {
 		assertThrows(OrderNotFoundException.class, () -> {
-			orderService.changeOrderStatus("1345254363565", "delivered");
+			orderService.updateOrderStatus("1345254363565", "delivered");
 		});
 	}
 

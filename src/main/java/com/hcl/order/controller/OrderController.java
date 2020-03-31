@@ -16,43 +16,55 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hcl.order.configuration.AppProperties;
 import com.hcl.order.entity.Order;
 import com.hcl.order.entity.OrderItem;
 import com.hcl.order.exception.ProductNotFoundException;
 import com.hcl.order.responseEntity.Response;
-import com.hcl.order.service.OrderManagerImpl;
+import com.hcl.order.service.OrderManager;
 import com.hcl.order.utilities.Utills;
 
+/**
+ * @author ajeet Controller for order service
+ */
 @RestController
 public class OrderController {
 
-	@Autowired 
-	OrderManager orderservice;
- 
+	@Autowired
+	AppProperties appProperties;
+	@Autowired
+	OrderManager orderManager;
+
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+	/**
+	 * method for creating order 
+	 * @param order Order object
+	 * @param userId id of user 
+	 * @return response entity
+	 * @throws Exception
+	 */
 	@PostMapping("/order/{userId}")
 	public ResponseEntity<?> createOrder(@RequestBody(required = true) Order order,
 			@PathVariable("userId") String userId) throws Exception {
 		Response response = new Response();
 
-        /*No HardCoded Status, Read from Properties Files*/
-		Order formattedOrder = new Order(Utills.unique(), userId, "Preparing", order.getOrderTotal(),
-				order.getPaymentMode(), order.getPaymentCurrency(), order.getShippingAdderess());
+		/* No HardCoded Status, Read from Properties Files */
+		Order formattedOrder = new Order(Utills.unique(), userId, appProperties.getOrderStatusPreparing(),
+				order.getOrderTotal(), order.getPaymentMode(), order.getPaymentCurrency(), order.getShippingAdderess());
 		List<OrderItem> orderItems = order.getOrderItems();
-		
-		/*Dangling Code, Persist in Database*/
+
 		for (OrderItem orderItem : orderItems) {
 			orderItem.setOrders(formattedOrder);
 
 		}
 
-		Optional<Order> orderResponse = orderservice.createOrder(formattedOrder, orderItems);
+		Optional<Order> orderResponse = orderManager.createOrder(formattedOrder, orderItems);
 		logger.debug(orderResponse.toString());
-		
-		/*Read from HttpStatus e.g. HttpStatus.BAD_REQUEST*/
+
+		/* Read from HttpStatus e.g. HttpStatus.BAD_REQUEST */
 		response.setStatus(HttpStatus.CREATED);
-		response.setMessage("success");
+		response.setMessage(appProperties.getSuccessStatus());
 		List<Order> data = new ArrayList<Order>();
 		data.add(orderResponse.get());
 		response.setData(data);
@@ -61,17 +73,25 @@ public class OrderController {
 
 	}
 
+	
+	
+	/**
+	 * method for updating the order status
+	 * @param orderId 
+	 * @param orderStatus
+	 * @return
+	 */
 	@PutMapping("/order/{orderId}/{orderStatus}")
 	public ResponseEntity<Response> updateOrder(@PathVariable("orderId") String orderId,
 			@PathVariable("orderStatus") String orderStatus) {
 		Response response = new Response();
-		
-		/*Service function can be renamed to updateOrderStatus*/
-		Optional<Order> order = orderservice.changeOrderStatus(orderId, orderStatus);
 
-        /*Same Comment as Above*/
-		response.setStatus(HttpStatus.CREATED);
-		response.setMessage("success");
+		/* Service function can be renamed to updateOrderStatus */
+		Optional<Order> order = orderManager.updateOrderStatus(orderId, orderStatus);
+
+		/* Same Comment as Above */
+		response.setStatus(HttpStatus.OK);
+		response.setMessage(appProperties.getSuccessStatus());
 		List<Order> data = new ArrayList<Order>();
 		data.add(order.get());
 		response.setData(data);
@@ -80,13 +100,13 @@ public class OrderController {
 	}
 
 	@GetMapping("/order/{orderId}")
-	/*Controller function can be renamed to getAllIOrderItems*/
+	/* Controller function can be renamed to getAllIOrderItems */
 	public ResponseEntity<Response> getAllIOrderItems(@PathVariable("orderId") String orderId) {
 		Response response = new Response();
 
-		Optional<List<OrderItem>> orderItemsList = orderservice.getAllIOrderItems(orderId);
-		response.setStatus("200");
-		response.setMessage("success");
+		Optional<List<OrderItem>> orderItemsList = orderManager.getAllIOrderItems(orderId);
+		response.setStatus(HttpStatus.OK);
+		response.setMessage(appProperties.getSuccessStatus());
 		response.setData(orderItemsList.get());
 
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
@@ -97,23 +117,23 @@ public class OrderController {
 	public ResponseEntity<Response> getOrderHistoryOfUser(@PathVariable("userId") String userId) {
 		Response response = new Response();
 
-		Optional<List<Order>> ordersList = orderservice.getOrderHistoryOfUser(userId);
-		response.setStatus("200");
-		response.setMessage("success");
+		Optional<List<Order>> ordersList = orderManager.getOrderHistoryOfUser(userId);
+		response.setStatus(HttpStatus.OK);
+		response.setMessage(appProperties.getSuccessStatus());
 		response.setData(ordersList.get());
 
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
 
 	}
-	
-	
+
 	@GetMapping("/order/{orderId}/{productId}")
-	public ResponseEntity<Response> getItemDetailOfOrder(@PathVariable("orderId") String orderId,@PathVariable("productId") String productId) throws ProductNotFoundException {
+	public ResponseEntity<Response> getItemDetailOfOrder(@PathVariable("orderId") String orderId,
+			@PathVariable("productId") String productId) throws ProductNotFoundException {
 		Response response = new Response();
 
-		Optional<OrderItem> orderItem = orderservice.getDetailOfOrderItem(orderId,productId);
-		response.setStatus("200");
-		response.setMessage("success");
+		Optional<OrderItem> orderItem = orderManager.getDetailOfOrderItem(orderId, productId);
+		response.setStatus(HttpStatus.OK);
+		response.setMessage(appProperties.getSuccessStatus());
 		List<OrderItem> data = new ArrayList<OrderItem>();
 		data.add(orderItem.get());
 		response.setData(data);
@@ -121,6 +141,5 @@ public class OrderController {
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
 
 	}
-	
 
 }

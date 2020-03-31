@@ -11,7 +11,7 @@ public interface OrderManager {
 	
 	public Optional<Order> createOrder(Order order, List<OrderItem> orderItems) throws Exception;
 	
-	public Optional<Order> changeOrderStatus(String orderId, String status);
+	public Optional<Order> updateOrderStatus(String orderId, String status);
 	
 	public Optional<List<OrderItem>> getAllIOrderItems(String orderId);
 

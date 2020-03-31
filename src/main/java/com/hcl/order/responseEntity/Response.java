@@ -3,15 +3,20 @@ package com.hcl.order.responseEntity;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Component
 public class Response {
 
-	private String status;
+	private String textStatus;
+	private HttpStatus status;
+	
 	private String message;
 	private List<?> data;
 	private Set<?> setdata;
+	
+	
 
 //	public Response(String status, String message, List<?> data) {
 //		this.status = status;
@@ -30,13 +35,7 @@ public class Response {
 //		this.setdata = setdata;
 //	}
 
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
+	
 
 	public String getMessage() {
 		return message;
@@ -58,8 +57,28 @@ public class Response {
 		return setdata;
 	}
 
+	public String getTextStatus() {
+		return textStatus;
+	}
+
+	public void setTextStatus(String textStatus) {
+		this.textStatus = textStatus;
+	}
+
+	public HttpStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(HttpStatus status) {
+		this.status = status;
+	}
+
+	
 //	public void setSetdata(Set<?> setdata) {
 //		this.setdata = setdata;
 //	}
 
+	
+	
+	
 }

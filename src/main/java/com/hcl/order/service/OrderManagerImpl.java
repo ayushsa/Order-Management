@@ -5,8 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.hcl.order.dao.OrderDAOImpl;
+import com.hcl.order.dao.OrderDAO;
 import com.hcl.order.entity.Order;
 import com.hcl.order.entity.OrderItem;
 import com.hcl.order.exception.OrderNotFoundException;
@@ -16,21 +15,21 @@ import com.hcl.order.exception.ProductNotFoundException;
 public class OrderManagerImpl implements OrderManager {
 
 	@Autowired
-	OrderDAOImpl orderRepository; 
+	OrderDAO orderDAO; 
 
 	@Override
 	public Optional<Order> createOrder(Order order, List<OrderItem> orderItems) throws Exception {
-		Optional<Order> savedorder = orderRepository.saveOrder(order, orderItems);
+		Optional<Order> savedorder = orderDAO.saveOrder(order, orderItems);
 		return savedorder;
 		
 	}
 
 	@Override
-	public Optional<Order> changeOrderStatus(String orderId, String orderstatus) {
-		Optional<Order> order = orderRepository.getOrderById(orderId);
+	public Optional<Order> updateOrderStatus(String orderId, String orderstatus) {
+		Optional<Order> order = orderDAO.getOrderById(orderId);
 		if (order.isPresent()) {
 			order.get().setOrderStatus(orderstatus);
-			orderRepository.updateOrder(order.get());
+			orderDAO.updateOrder(order.get());
 			return order;
 		}else {
 			throw new OrderNotFoundException("order not found"); 
@@ -41,7 +40,7 @@ public class OrderManagerImpl implements OrderManager {
 
 	@Override
 	public Optional<List<OrderItem>> getAllIOrderItems(String orderId) {
-		Optional<Order> order = orderRepository.getOrderById(orderId);
+		Optional<Order> order = orderDAO.getOrderById(orderId);
 		if (order.isPresent()) {
 			return Optional.of(order.get().getOrderItems());
 		}else {
@@ -53,7 +52,7 @@ public class OrderManagerImpl implements OrderManager {
 
 	@Override
 	public Optional<OrderItem> getDetailOfOrderItem(String orderId, String productId) throws ProductNotFoundException {
-		Optional<Order> order = orderRepository.getOrderById(orderId);
+		Optional<Order> order = orderDAO.getOrderById(orderId);
 		if (order.isPresent()) {
 			OrderItem foundOrderItem = null;
 			for (OrderItem orderItem : order.get().getOrderItems()) {
@@ -76,7 +75,7 @@ public class OrderManagerImpl implements OrderManager {
 
 	@Override
 	public Optional<List<Order>> getOrderHistoryOfUser(String userId) {
-		Optional<List<Order>> orderHistory = orderRepository.getAllOrderByUserId(userId);
+		Optional<List<Order>> orderHistory = orderDAO.getAllOrderByUserId(userId);
 		if (orderHistory.isPresent()) {
 			return orderHistory;
 		}else {
